@@ -14,7 +14,6 @@ lazy val commonSettings = Seq(
     }
   },
   Test / fork := true,
-  resolvers += Resolver.sonatypeRepo("releases"),
 )
 
 lazy val noPublishSettings =
@@ -31,7 +30,7 @@ lazy val publishSettings = commonSettings ++ Seq(
 lazy val root = (project in file("."))
   .settings(noPublishSettings)
   .settings(name := "Trace4Cats Sttp")
-  .aggregate(`sttp-client3`, `sttp-common`, `sttp-tapir`)
+  .aggregate(`sttp-client3`, `sttp-client4`, `sttp-common`, `sttp-tapir`)
 
 lazy val `sttp-client3` = (project in file("modules/sttp-client3"))
   .settings(publishSettings)
@@ -43,6 +42,19 @@ lazy val `sttp-client3` = (project in file("modules/sttp-client3"))
       Dependencies.sttpClient3
     ),
     libraryDependencies ++= Seq(Dependencies.http4sDsl, Dependencies.sttpClient3Http4s).map(_ % Test)
+  )
+  .dependsOn(`sttp-common` % "compile->compile;test->test")
+
+lazy val `sttp-client4` = (project in file("modules/sttp-client4"))
+  .settings(publishSettings)
+  .settings(
+    name := "trace4cats-sttp-client4",
+    libraryDependencies ++= Seq(
+      Dependencies.trace4catsContextUtils,
+      Dependencies.trace4catsCore,
+      Dependencies.sttpClient4
+    ),
+    libraryDependencies ++= Seq(Dependencies.http4sDsl, Dependencies.sttpClient4Http4s).map(_ % Test)
   )
   .dependsOn(`sttp-common` % "compile->compile;test->test")
 
